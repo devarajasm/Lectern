@@ -91,6 +91,7 @@ export const api = {
     form.append("file", file);
     return request<Book>("/api/books", { method: "POST", body: form });
   },
+  renameBook: (id: string, title: string) => request<Book>(`/api/books/${id}`, json("PATCH", { title })),
   deleteBook: (id: string) => request<void>(`/api/books/${id}`, { method: "DELETE" }),
   getChunks: (id: string, start: number, limit = 5) => request<Chunk[]>(`/api/books/${id}/chunks?start=${start}&limit=${limit}`),
 

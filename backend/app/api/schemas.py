@@ -28,6 +28,10 @@ class BookDetailOut(BookOut):
     chapters: list[ChapterOut]
 
 
+class BookUpdateIn(BaseModel):
+    title: str = Field(min_length=1, max_length=200)
+
+
 class ChunkOut(BaseModel):
     index: int
     chapter_index: int

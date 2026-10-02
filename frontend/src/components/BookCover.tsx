@@ -11,8 +11,9 @@ function hash(s: string): number {
   return h >>> 0;
 }
 
-export function BookCover({ title, className = "" }: { title: string; className?: string }) {
-  const h = hash(title);
+/** `seed` (e.g. the book id) fixes the colours, so renaming a book keeps its cover. */
+export function BookCover({ title, seed, className = "" }: { title: string; seed?: string; className?: string }) {
+  const h = hash(seed ?? title);
   const [from, to] = PALETTES[h % PALETTES.length];
   const angle = 120 + (h % 90);
   return (

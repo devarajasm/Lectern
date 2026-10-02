@@ -3,6 +3,7 @@ import { ArrowLeft, ChevronDown, MessagesSquare, Settings2, Type, X } from "luci
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReadingStatus } from "../api/client";
 import { AppearancePanel } from "./AppearancePanel";
+import { EditableTitle } from "./EditableTitle";
 import { useReadingAgent } from "../agent/useReadingAgent";
 import type { Settings } from "../settings";
 import type { VoiceManager } from "../voice/voiceManager";
@@ -30,6 +31,7 @@ export function Reader({ bookId, voice, settings, engineLabel, onSettings, onBac
   const agent = useReadingAgent(bookId, voice, agentOptions, notify);
   const [showChat, setShowChat] = useState(false);
   const [showLook, setShowLook] = useState(false);
+  const [renaming, setRenaming] = useState(false);
   const lookRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { onStatusChange?.(agent.status); }, [agent.status, onStatusChange]);
@@ -68,7 +70,18 @@ export function Reader({ bookId, voice, settings, engineLabel, onSettings, onBac
       <header className="relative z-30 flex items-center gap-2 border-b border-line bg-paper/70 px-3 py-2.5 backdrop-blur-xl sm:px-5">
         <button onClick={onBack} className="rounded-full p-2 text-ink-2 hover:bg-paper-2 hover:text-ink" aria-label="Back to library"><ArrowLeft className="size-5" /></button>
         <div className="min-w-0 flex-1">
-          <div className="reading-text truncate text-[15px] font-semibold">{book?.title ?? "…"}</div>
+          {book ? (
+            <div className="reading-text flex min-w-0 text-[15px] font-semibold">
+              {renaming ? (
+                <EditableTitle value={book.title} editing onEditingChange={setRenaming} inputClassName="text-[15px]"
+                  onSave={async (t) => { try { await agent.renameBook(t); } catch (e) { notify((e as Error).message, "error"); throw e; } }} />
+              ) : (
+                <button onClick={() => setRenaming(true)} className="truncate rounded-md text-left hover:bg-paper-2/80" title="Click to rename">
+                  {book.title}
+                </button>
+              )}
+            </div>
+          ) : <div className="reading-text text-[15px] font-semibold">…</div>}
           {book && book.chapters.length > 1 && (
             <div className="relative inline-flex max-w-full items-center">
               <select value={chapterIdx}

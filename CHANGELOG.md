@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+- **Rename books:** use the pencil button on a library card, double-click the title under the cover, or click the title in the reader header. Enter saves and Escape cancels. The API endpoint is `PATCH /api/books/{id}`.
+
+### Changed
+- Cover colours now come from the book's ID rather than its title, so renaming doesn't change a cover. Existing covers change colour once.
+
 ## [0.1.0] - 2026-10-02
 
 First public release: the core voice reading loop, **read → interrupt → ask → answer → resume**.

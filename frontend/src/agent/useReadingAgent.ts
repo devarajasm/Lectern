@@ -410,6 +410,12 @@ export function useReadingAgent(bookId: string, voice: VoiceManager, options: Ag
     await handleUtterance(text, run);
   }, [bookId, voice, handleUtterance]);
 
+  const renameBook = useCallback(async (title: string) => {
+    const updated = await api.renameBook(bookId, title);
+    setBook((b) => (b ? { ...b, title: updated.title } : b));
+    if (bookRef.current) bookRef.current = { ...bookRef.current, title: updated.title };
+  }, [bookId]);
+
   const clearConversation = useCallback(async () => {
     await api.clearConversation(bookId);
     setTurns([]);
@@ -429,7 +435,7 @@ export function useReadingAgent(bookId: string, voice: VoiceManager, options: Ag
   return {
     book, status, position, wordIndex, turns, partial, pendingQuestion, thinking, speakingAnswer, level,
     chunks: chunks.current, chunkVersion,
-    play, pause, togglePlay, interrupt, seek, step, ask, clearConversation, ensureChunks,
+    play, pause, togglePlay, interrupt, seek, step, ask, clearConversation, ensureChunks, renameBook,
   };
 }
 

@@ -1,8 +1,9 @@
 import { motion } from "motion/react";
-import { BookOpen, FileUp, Loader2, Settings2, Trash2 } from "lucide-react";
+import { BookOpen, FileUp, Loader2, Pencil, Settings2, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, type Book } from "../api/client";
 import { BookCover } from "./BookCover";
+import { EditableTitle } from "./EditableTitle";
 
 interface Props {
   onOpen: (id: string) => void;
@@ -19,6 +20,7 @@ export function Library({ onOpen, onOpenSettings, notify }: Props) {
   const [books, setBooks] = useState<Book[] | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [renaming, setRenaming] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const refresh = useCallback(() => {
@@ -38,6 +40,16 @@ export function Library({ onOpen, onOpenSettings, notify }: Props) {
       notify((e as Error).message, "error");
     } finally {
       setUploading(null);
+    }
+  };
+
+  const rename = async (book: Book, title: string) => {
+    try {
+      const updated = await api.renameBook(book.id, title);
+      setBooks((list) => list?.map((b) => (b.id === book.id ? { ...b, title: updated.title } : b)) ?? list);
+    } catch (e) {
+      notify((e as Error).message, "error");
+      throw e;
     }
   };
 
@@ -100,9 +112,14 @@ export function Library({ onOpen, onOpenSettings, notify }: Props) {
             {books.map((b, i) => (
               <motion.div key={b.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
                 className="group relative">
-                <button onClick={() => onOpen(b.id)} className="block w-full text-left">
-                  <BookCover title={b.title} className="aspect-[2/3] w-full transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:rotate-[-0.6deg]" />
-                  <div className="mt-3 line-clamp-1 text-sm font-medium">{b.title}</div>
+                <button onClick={() => renaming !== b.id && onOpen(b.id)} className="block w-full text-left">
+                  <BookCover title={b.title} seed={b.id} className="aspect-[2/3] w-full transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:rotate-[-0.6deg]" />
+                </button>
+                <div className="mt-3 flex min-h-6 items-center text-sm font-medium" onDoubleClick={() => setRenaming(b.id)} title="Double-click to rename">
+                  <EditableTitle value={b.title} editing={renaming === b.id} onEditingChange={(on) => setRenaming(on ? b.id : null)}
+                    onSave={(t) => rename(b, t)} className="line-clamp-1 cursor-text" inputClassName="text-sm" />
+                </div>
+                <button onClick={() => renaming !== b.id && onOpen(b.id)} className="block w-full text-left" tabIndex={-1}>
                   <div className="mt-1 flex items-center justify-between text-xs text-ink-3">
                     <span>{STATUS_LABEL[b.status] ?? ""}</span><span>{b.page_count} pp</span>
                   </div>
@@ -110,10 +127,16 @@ export function Library({ onOpen, onOpenSettings, notify }: Props) {
                     <div className="h-full rounded-full bg-accent" style={{ width: `${Math.round(b.progress * 100)}%` }} />
                   </div>
                 </button>
-                <button onClick={() => remove(b)} aria-label={`Delete ${b.title}`}
-                  className="absolute top-2 right-2 rounded-full bg-black/35 p-1.5 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 focus:opacity-100">
-                  <Trash2 className="size-3.5" />
-                </button>
+                <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                  <button onClick={() => setRenaming(b.id)} aria-label={`Rename ${b.title}`} title="Rename"
+                    className="rounded-full bg-black/35 p-1.5 text-white backdrop-blur hover:bg-black/55">
+                    <Pencil className="size-3.5" />
+                  </button>
+                  <button onClick={() => remove(b)} aria-label={`Delete ${b.title}`} title="Delete"
+                    className="rounded-full bg-black/35 p-1.5 text-white backdrop-blur hover:bg-black/55">
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
               </motion.div>
             ))}
           </div>

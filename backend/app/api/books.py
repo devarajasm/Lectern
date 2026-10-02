@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from ..deps import Container, get_container
 from ..ingest import EmptyBook, ingest_pdf, reprocess_book
 from ..pdf.extractor import NoExtractableText
-from .schemas import BookDetailOut, BookOut, ChapterOut, ChunkOut
+from .schemas import BookDetailOut, BookOut, BookUpdateIn, ChapterOut, ChunkOut
 
 router = APIRouter(prefix="/api/books", tags=["books"])
 
@@ -49,6 +49,16 @@ def get_book(book_id: str, c: Container = Depends(get_container)):
     if book is None:
         raise HTTPException(404, "Book not found.")
     return {**_book_out(c, book), "chapters": [ChapterOut(**ch.__dict__) for ch in c.books.get_chapters(book_id)]}
+
+
+@router.patch("/{book_id}", response_model=BookOut)
+def update_book(book_id: str, body: BookUpdateIn, c: Container = Depends(get_container)):
+    title = " ".join(body.title.split())  # trim and collapse whitespace
+    if not title:
+        raise HTTPException(422, "Title cannot be empty.")
+    if not c.books.rename_book(book_id, title):
+        raise HTTPException(404, "Book not found.")
+    return _book_out(c, c.books.get_book(book_id))
 
 
 @router.get("/{book_id}/chunks", response_model=list[ChunkOut])

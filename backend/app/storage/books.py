@@ -100,6 +100,11 @@ class BookRepository:
             [(c.text, book_id, c.index) for c in chunks],
         )
 
+    def rename_book(self, book_id: str, title: str) -> bool:
+        with self.db.connect() as conn:
+            cur = conn.execute("UPDATE books SET title = ? WHERE id = ?", (title, book_id))
+            return cur.rowcount > 0
+
     def delete_book(self, book_id: str) -> bool:
         with self.db.connect() as conn:
             conn.execute("DELETE FROM chunks_fts WHERE book_id = ?", (book_id,))

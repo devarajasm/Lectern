@@ -65,3 +65,12 @@ def test_providers_endpoint(client):
     r = client.put("/api/providers", json={"llm_provider": "ollama"})
     assert r.json()["llm"]["active"] == "ollama"
     assert client.put("/api/providers", json={"llm_provider": "nope"}).status_code == 400
+
+
+def test_rename_book(client, book_id):
+    r = client.patch(f"/api/books/{book_id}", json={"title": "  The   Keeper  "})
+    assert r.status_code == 200 and r.json()["title"] == "The Keeper"
+    assert client.get(f"/api/books/{book_id}").json()["title"] == "The Keeper"
+    assert client.patch(f"/api/books/{book_id}", json={"title": "   "}).status_code == 422
+    assert client.patch(f"/api/books/{book_id}", json={"title": ""}).status_code == 422
+    assert client.patch("/api/books/nope", json={"title": "X"}).status_code == 404
