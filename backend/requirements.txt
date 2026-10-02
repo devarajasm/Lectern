@@ -1,4 +1,4 @@
-fastapi>=0.115
+fastapi>=0.141.1
 uvicorn[standard]>=0.30
 pypdf>=5.0
 openai>=1.60
