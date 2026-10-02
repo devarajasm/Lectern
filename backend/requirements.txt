@@ -3,7 +3,7 @@ uvicorn[standard]>=0.30
 pypdf>=5.0
 openai>=1.60
 python-multipart>=0.0.9
-pydantic-settings>=2.4
+pydantic-settings>=2.15.0
 truststore>=0.10
 # dev / tests
 pytest>=8.0
