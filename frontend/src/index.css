@@ -1,0 +1,142 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/literata";
+@import "@fontsource-variable/source-serif-4";
+@import "@fontsource-variable/eb-garamond";
+@import "@fontsource-variable/merriweather";
+@import "@fontsource-variable/atkinson-hyperlegible-next";
+
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Literata Variable", ui-serif, Georgia, serif;
+
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-mark: var(--mark);
+}
+
+/* ------------------------------------------------------------------ reading themes */
+
+:root,
+[data-theme="paper"] {
+  --paper: #f6f1e8; --paper-2: #efe8db; --card: #fffdf8;
+  --ink: #26211c; --ink-2: #5c534a; --ink-3: #958a7e; --line: #e2d8c8;
+}
+[data-theme="sepia"] {
+  --paper: #f1e5c9; --paper-2: #e8d9b7; --card: #f8eed8;
+  --ink: #3b2f22; --ink-2: #6b5a45; --ink-3: #9a876d; --line: #dccaa3;
+}
+[data-theme="slate"] {
+  --paper: #1e2125; --paper-2: #25292e; --card: #2a2e34;
+  --ink: #e6e8eb; --ink-2: #aab1ba; --ink-3: #737c87; --line: #373c43;
+}
+[data-theme="night"] {
+  --paper: #15130f; --paper-2: #1c1914; --card: #211d18;
+  --ink: #ece4d8; --ink-2: #b4a999; --ink-3: #7b7266; --line: #342e26;
+}
+[data-theme="midnight"] {
+  --paper: #0d1321; --paper-2: #131b2e; --card: #172036;
+  --ink: #e3e8f4; --ink-2: #a3aecb; --ink-3: #6b7896; --line: #243050;
+}
+[data-theme="forest"] {
+  --paper: #0f1a15; --paper-2: #14231c; --card: #182a21;
+  --ink: #e2ece5; --ink-2: #a5bcae; --ink-3: #6d8676; --line: #22382c;
+}
+
+:root { color-scheme: light; }
+[data-mode="dark"] { color-scheme: dark; }
+
+/* ------------------------------------------------------------------ accents
+   Each accent has a light-mode and a dark-mode shade, and the text colour that reads on it. */
+
+:root, [data-accent="ember"] { --accent-l: #c2410c; --accent-d: #f08a4b; --on-accent-l: #fff; --on-accent-d: #1a0d05; }
+[data-accent="rose"]   { --accent-l: #be123c; --accent-d: #fb7185; --on-accent-l: #fff; --on-accent-d: #2a0710; }
+[data-accent="violet"] { --accent-l: #6d28d9; --accent-d: #a78bfa; --on-accent-l: #fff; --on-accent-d: #160b2e; }
+[data-accent="ocean"]  { --accent-l: #0369a1; --accent-d: #38bdf8; --on-accent-l: #fff; --on-accent-d: #04192a; }
+[data-accent="teal"]   { --accent-l: #0f766e; --accent-d: #2dd4bf; --on-accent-l: #fff; --on-accent-d: #04201c; }
+[data-accent="gold"]   { --accent-l: #a16207; --accent-d: #facc15; --on-accent-l: #fff; --on-accent-d: #241a02; }
+
+:root {
+  --accent: var(--accent-l);
+  --on-accent: var(--on-accent-l);
+  --accent-soft: color-mix(in oklab, var(--accent) 16%, var(--paper));
+  --mark: color-mix(in oklab, var(--accent) 26%, var(--paper));
+  --reading-font: var(--font-serif);
+  --reading-size: 20px;
+  --reading-leading: 1.85;
+  --reading-width: 68ch;
+}
+[data-mode="dark"] {
+  --accent: var(--accent-d);
+  --on-accent: var(--on-accent-d);
+  --mark: color-mix(in oklab, var(--accent) 30%, var(--paper));
+}
+
+/* ------------------------------------------------------------------ base */
+
+html, body, #root { height: 100%; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 400ms ease, color 400ms ease;
+}
+
+.reading-text { font-family: var(--font-serif); font-optical-sizing: auto; }
+
+.reading-body {
+  font-family: var(--reading-font);
+  font-size: var(--reading-size);
+  line-height: var(--reading-leading);
+  max-width: var(--reading-width);
+  font-optical-sizing: auto;
+  transition: max-width 300ms ease;
+}
+
+/* ------------------------------------------------------------------ sentence highlighting */
+
+.sentence {
+  border-radius: 0.3em; cursor: pointer;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  padding: 0.05em 0.1em; margin: 0 -0.1em;
+  transition: background-color 250ms ease, color 250ms ease, opacity 300ms ease, text-shadow 250ms ease;
+}
+.sentence:hover { background: color-mix(in oklab, var(--mark) 50%, transparent); }
+.sentence.read { color: var(--ink-2); }
+
+[data-highlight="marker"] .sentence.current { background: var(--mark); color: var(--ink); }
+[data-highlight="underline"] .sentence.current {
+  color: var(--ink);
+  text-decoration: underline; text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px; text-underline-offset: 0.3em;
+}
+[data-highlight="glow"] .sentence.current {
+  color: var(--ink);
+  text-shadow: 0 0 18px color-mix(in oklab, var(--accent) 55%, transparent);
+}
+
+.word-current { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+[data-highlight="underline"] .word-current { background: var(--mark); border-radius: 0.2em; text-decoration: none; }
+
+/* Focus mode: everything except the sentence being read fades back. */
+[data-focus="on"] .reading-body .sentence:not(.current) { opacity: 0.32; }
+[data-focus="on"] .reading-body .sentence:not(.current):hover { opacity: 0.7; }
+
+.scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+
+input[type="range"] { accent-color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
