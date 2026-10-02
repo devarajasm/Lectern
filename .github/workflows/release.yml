@@ -22,7 +22,7 @@ jobs:
           echo "tag=$tag VERSION=$v package.json=$p"
           test "$tag" = "$v" && test "$tag" = "$p"
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
           cache: pip
