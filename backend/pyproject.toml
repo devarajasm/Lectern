@@ -1,0 +1,11 @@
+[project]
+name = "lectern-backend"
+dynamic = ["version"]
+description = "Lectern — voice-first AI book reader (API server)"
+license = "AGPL-3.0-only"
+authors = [{ name = "Devaraja S M" }]
+requires-python = ">=3.11"
+readme = "../README.md"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

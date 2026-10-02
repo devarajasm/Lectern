@@ -1,0 +1,45 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Please don't paste book text, API keys or private conversations** — describe the problem instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Upload a PDF (what kind? e.g. calibre export, scanned, multi-column)
+        2. Press play, then Space…
+  - type: dropdown
+    id: llm
+    attributes:
+      label: AI provider
+      options: [Azure OpenAI, OpenAI, Ollama, OpenAI-compatible server, Hugging Face, Not relevant]
+  - type: dropdown
+    id: voice
+    attributes:
+      label: Voice engine
+      options: [Cloud voice, Browser voice, Not relevant]
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "Lectern v0.1.0, macOS 15, Chrome 140, Python 3.13"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Server logs contain no book text by design, so they are safe to share.
+      render: shell

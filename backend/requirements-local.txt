@@ -1,0 +1,4 @@
+# Optional: run an LLM in-process with Hugging Face transformers (LLM_PROVIDER=huggingface)
+transformers>=4.45
+torch>=2.3
+accelerate>=0.33
